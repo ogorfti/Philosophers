@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/02/18 21:53:28 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/02/22 09:37:41 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,24 @@ long	get_time(void)
 int	check_dead(long last_eat, int die_time)
 {
 	long long curr_time = get_time();
-	if ((curr_time - last_eat) > die_time)
+	if ((curr_time - last_eat) >= die_time)
 		return (1);
 	return (0);
 }
+
+// void	destroy_mutexes(t_philo *philo)
+// {
+// 	int	i;
+	
+// 	i = 0;
+// 	while (i < philo->philo_count)
+// 	{
+// 		destroy_mutexes(philo[i].right);
+// 		destroy_mutexes(philo[i].left);
+// 		i++;
+// 	}
+// }
+
 void	*philosopher(void *arg)
 {
 	t_philo	*philo;
@@ -58,16 +72,23 @@ void	*philosopher(void *arg)
 	philo = (t_philo *)arg;
 	while (!philo->dead)
 	{
-		pthread_mutex_lock(philo->left);
 		pthread_mutex_lock(philo->right);
-		printf("%ld %d has taken a fork\n", get_time() - philo->first_eat, philo->id);	
+		if (philo->philo_count != 1)
+		{
+			pthread_mutex_lock(philo->left);
+			printf("%ld %d has taken a fork\n", get_time() - philo->first_eat, philo->id);	
+			
+		}
 		printf("%ld %d has taken a fork\n", get_time() - philo->first_eat, philo->id);
-
-		philo->last_eat = get_time();
-		start_eat = philo->last_eat;
-		printf("%ld %d is eating\n", get_time() - philo->first_eat, philo->id);
-		usleep(philo->eat_time * 1000);
-		pthread_mutex_unlock(philo->left);
+		if (philo->philo_count != 1)
+		{
+			philo->last_eat = get_time();
+			start_eat = philo->last_eat;
+			printf("%ld %d is eating\n", get_time() - philo->first_eat, philo->id);
+			usleep(philo->eat_time * 1000);
+		}
+		if (philo->philo_count != 1)		
+			pthread_mutex_unlock(philo->left);
 		pthread_mutex_unlock(philo->right);
 		
 		printf("%ld %d is sleeping\n", get_time() - philo->first_eat, philo->id);
@@ -81,12 +102,17 @@ void	*philosopher(void *arg)
 				return (NULL);
 			}
 		}
-		if (check_dead(philo->last_eat, philo->die_time) == 1)
-		{
-			philo->dead = 1;
-			printf("%ld %d died\n", get_time() - philo->first_eat, philo->id);
-			return (NULL);
-		}
+		// if (check_dead(philo->last_eat, philo->die_time) == 1 || philo->philo_count == 1)
+		// {
+		// 	philo->dead = 1;
+		// 	printf("%ld %d died\n", get_time() - philo->first_eat, philo->id);
+		// 	printf("********--------1: %d\n", philo->dead);
+		// 	destroy_mutexes(philo);
+		// 	pthread_exit(NULL);
+		// 	usleep(150);
+		// 	exit (0);
+		// 	return (NULL);
+		// }
 	}
 	return (NULL);
 }
@@ -108,6 +134,17 @@ void	create_philos(pthread_t *id, t_philo *philo, char **av)
 		i++;
 	}
 	i = 0;
+	while (1)
+	{
+		//printf("test\n");
+		if (get_time() - philo[i].last_eat >= philo[i].die_time)
+		{
+			printf("%ld %d died\n", get_time() - philo[i].first_eat, philo[i].id);
+			return ;
+		}
+		i = (i + 1) % philo[i].philo_count;
+		usleep(50);
+	}
 	while (i < nbr_philo)
 	{
 		if (pthread_join(id[i], NULL) != 0)
@@ -140,6 +177,7 @@ void	initializes_philos(int ac, char **av, pthread_mutex_t *forks, t_philo	*phil
 	while (i < atoi(av[1]))
 	{
 		philo[i].first_eat = first;
+		philo[i].last_eat = first;
 		philo[i].die_time = atoi(av[2]);
 		philo[i].eat_time = atoi(av[3]);
 		philo[i].sleep_time = atoi(av[4]);
@@ -156,6 +194,18 @@ void	initializes_philos(int ac, char **av, pthread_mutex_t *forks, t_philo	*phil
 	}	
 }
 
+int	check_args(int ac, char **av)
+{
+	if (atoi(av[2]) < 0 || atoi(av[3]) < 0 || atoi(av[4]) < 0)
+		return 1;	
+	if (ac == 6)
+	{
+		if (atoi(av[5]) < 0)
+			return 1;
+	}
+	return (0);
+}
+
 int main(int ac, char **av) 
 {
 	pthread_mutex_t	*forks;
@@ -164,6 +214,11 @@ int main(int ac, char **av)
 
 	if (ac == 5 || ac == 6)
 	{
+		if (check_args(ac, av) == 1)
+		{
+			printf("Error\n");
+			return (0);
+		}
 		id = malloc(sizeof(pthread_t) * atoi(av[1]));
 		forks = malloc(sizeof(pthread_mutex_t) * atoi(av[1]));
 		init_forks (forks, atoi(av[1]));
@@ -177,4 +232,13 @@ int main(int ac, char **av)
 		printf("Invalid number of arguments!\n");
 	
 	return (0);
+}
+
+void sleep_code(int ms)
+{
+	long max;
+	
+	max = get_time() + ms;
+	while(get_time() < ms)
+		usleep(500);
 }
