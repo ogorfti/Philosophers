@@ -6,7 +6,7 @@
 #    By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/15 18:14:09 by ogorfti           #+#    #+#              #
-#    Updated: 2023/02/18 19:29:35 by ogorfti          ###   ########.fr        #
+#    Updated: 2023/03/24 18:11:53 by ogorfti          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ RM = rm -f
 
 hd = philo.h
 
-all : $(NAME)
+all : $(NAME) clean
 
 %.o : %.c $(hd)
 	$(CC) $(CFLAGS) -c $< -o $@
