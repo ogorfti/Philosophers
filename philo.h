@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:28 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/03/24 01:18:54 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/03/26 16:35:50 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ typedef struct s_philo{
 	long			start_time;
 	int				dead;
 	int				stop;
+	int				argc;
+	char			**argv;
 }   				t_philo;
 
 
@@ -43,5 +45,16 @@ typedef struct s_process{
 	t_philo			*all_philo;
 
 }   			t_process;
+
+
+void	initializes_philos(pthread_mutex_t *forks, t_philo *philo, t_process *process);
+void	init_forks(pthread_mutex_t *forks, int nbr);
+long	get_time(void);
+void	my_usleep(int ms);
+int		check_args(int ac, char **av);
+void	*philosopher(void *arg);
+void	*check_dead(void *arg);
+void create_philos(pthread_t *id, t_philo *philo, char **av, t_process *process);
+
 
 #endif
