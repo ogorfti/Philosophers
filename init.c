@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/25 14:33:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/03/26 16:34:51 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/03/28 15:16:41 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,13 @@ void	init_forks(pthread_mutex_t *forks, int nbr)
 {
 	int	i;
 
-	i = 0;
-	while (i < nbr)
-	{
+	i = -1;
+	while (++i < nbr)
 		pthread_mutex_init(&forks[i], NULL);
-		i++;
-	}
 }
 
-void	initializes_philos(pthread_mutex_t *forks, t_philo *philo, t_process *process)
+void	initializes_philos(pthread_mutex_t *forks, t_philo *philo,
+		t_process *process)
 {
 	long	first;
 	int		i;
@@ -32,6 +30,7 @@ void	initializes_philos(pthread_mutex_t *forks, t_philo *philo, t_process *proce
 	first = get_time();
 	i = 0;
 	pthread_mutex_init(&process->mutex_print, NULL);
+	pthread_mutex_init(&process->data_race, NULL);
 	while (i < atoi(philo->argv[1]))
 	{
 		philo[i].start_time = first;
@@ -46,9 +45,9 @@ void	initializes_philos(pthread_mutex_t *forks, t_philo *philo, t_process *proce
 		philo[i].left = &forks[i];
 		philo[i].right = &forks[(i + 1) % atoi(philo->argv[1])];
 		philo[i].id = i + 1;
-		philo[i].dead = 1;
 		philo[i].stop = 1;
 		philo[i].mutex_print = &process->mutex_print;
+		philo[i].data_race = &process->data_race;
 		philo[i].philo_count = atoi(philo->argv[1]);
 		i++;
 	}
@@ -59,15 +58,14 @@ void	ft_join(pthread_t *id, int philo_count)
 {
 	int	i;
 
-	i = 0;
-	while (i < philo_count)
+	i = -1;
+	while (++i < philo_count)
 	{
 		if (pthread_join(id[i], NULL) != 0)
 		{
 			printf("Failed to join thread\n");
 			return ;
 		}
-		i++;
 	}
 }
 
@@ -90,6 +88,8 @@ void	create_philos(pthread_t *id, t_philo *philo,
 		i++;
 	}
 	pthread_create(&dead_id, NULL, check_dead, (void *)process->all_philo);
-	pthread_join(dead_id, NULL);
+	//pthread_mutex_unlock(philo->mutex_print);
+	printf("F\n");
 	ft_join(id, philo->philo_count);
+	pthread_join(dead_id, NULL);
 }

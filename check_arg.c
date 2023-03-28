@@ -6,20 +6,20 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/25 14:42:46 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/03/25 14:43:08 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/03/26 16:41:13 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int check_args(int ac, char **av)
+int	check_args(int ac, char **av)
 {
 	if (atoi(av[2]) < 0 || atoi(av[3]) < 0 || atoi(av[4]) < 0)
-		return 1;
+		return (1);
 	if (ac == 6)
 	{
 		if (atoi(av[5]) < 0)
-			return 1;
+			return (1);
 	}
 	return (0);
 }

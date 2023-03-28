@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:28 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/03/26 16:35:50 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/03/26 20:44:41 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,13 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/time.h>
+# define THINK "is thinking"
+# define EAT "is eating"
+# define SLEEP "is sleeping"
 
 typedef struct s_philo{
 	pthread_mutex_t	*mutex_print;
+	pthread_mutex_t	*data_race;
 	pthread_mutex_t	*right;
 	pthread_mutex_t	*left;
 	int				id;
@@ -42,6 +46,7 @@ typedef struct s_philo{
 typedef struct s_process{
 	
 	pthread_mutex_t	mutex_print;
+	pthread_mutex_t	data_race;
 	t_philo			*all_philo;
 
 }   			t_process;
@@ -54,7 +59,9 @@ void	my_usleep(int ms);
 int		check_args(int ac, char **av);
 void	*philosopher(void *arg);
 void	*check_dead(void *arg);
-void create_philos(pthread_t *id, t_philo *philo, char **av, t_process *process);
-
+void	create_philos(pthread_t *id, t_philo *philo, char **av, t_process *process);
+void	print_simulation(t_philo *philo, char *str);
+void	*check_dead(void *arg);
+int		meal_tracker(t_philo *philo);
 
 #endif
