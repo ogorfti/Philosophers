@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:28 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/03/28 21:14:49 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/01 23:19:44 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,5 +64,7 @@ void	create_philos(pthread_t *id, t_philo *philo, char **av, t_process *process)
 void	print_simulation(t_philo *philo, char *str);
 void	*check_dead(void *arg);
 int		meal_tracker(t_philo *philo);
+void   destroy_forks(pthread_mutex_t	*forks, int nbr_philo);
+long	ft_atoi(char *str);
 
 #endif
