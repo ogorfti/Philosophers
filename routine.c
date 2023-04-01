@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 01:18:23 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/01 15:04:20 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/01 20:39:42 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,6 @@ void	*check_dead(void *arg)
 
 	i = 0;
 	philo = (t_philo *)arg;
-	if (philo->id % 2 == 1)
-		my_usleep(100);
 	while (philo[i].stop)
 	{
 		pthread_mutex_lock(philo->data_race);
@@ -108,9 +106,10 @@ void	*philosopher(void *arg)
 
 	philo = (t_philo *)arg;
 	is_done = philo->stop;
+	if (philo->id % 2 != 0)
+		my_usleep(100);
 	while (is_done)
 	{
-		print_simulation(philo, THINK);
 		
 		taken_fork(philo);
 	
@@ -126,6 +125,7 @@ void	*philosopher(void *arg)
 		pthread_mutex_lock(philo->data_race);
 		is_done = philo->stop;
 		pthread_mutex_unlock(philo->data_race);
+		print_simulation(philo, THINK);
 	}
 	return (NULL);
 }
