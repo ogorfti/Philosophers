@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/25 14:33:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/03/28 15:16:41 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/01 15:02:04 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	initializes_philos(pthread_mutex_t *forks, t_philo *philo,
 	i = 0;
 	pthread_mutex_init(&process->mutex_print, NULL);
 	pthread_mutex_init(&process->data_race, NULL);
+
 	while (i < atoi(philo->argv[1]))
 	{
 		philo[i].start_time = first;
@@ -85,11 +86,10 @@ void	create_philos(pthread_t *id, t_philo *philo,
 			printf("Failed to creat thread\n");
 			return ;
 		}
+		//usleep(100);
 		i++;
 	}
 	pthread_create(&dead_id, NULL, check_dead, (void *)process->all_philo);
-	//pthread_mutex_unlock(philo->mutex_print);
-	printf("F\n");
 	ft_join(id, philo->philo_count);
 	pthread_join(dead_id, NULL);
 }

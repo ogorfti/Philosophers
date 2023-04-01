@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:28 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/03/26 20:44:41 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/03/28 21:14:49 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # define THINK "is thinking"
 # define EAT "is eating"
 # define SLEEP "is sleeping"
+# define FORK "has taken a fork"
 
 typedef struct s_philo{
 	pthread_mutex_t	*mutex_print;

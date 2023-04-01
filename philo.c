@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/03/26 22:49:10 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/03/31 22:07:27 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ int	meal_tracker(t_philo *philo)
 	while (i < philo->philo_count)
 	{
 		if (philo[i].eat_count > 0 || philo[i].eat_count == -1)
+		{
 			return (0);
+		}
 		i++;
 	}
 	i = 0;
@@ -56,7 +58,6 @@ int	main(int ac, char **av)
 		process = malloc(sizeof(t_process));
 		initializes_philos(forks, philo, process);
 		create_philos(id, philo, av, process);
-		//printf("TEST\n");
 	}
 	else
 		printf("Invalid number of arguments!\n");

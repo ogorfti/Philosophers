@@ -6,7 +6,7 @@
 #    By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/15 18:14:09 by ogorfti           #+#    #+#              #
-#    Updated: 2023/03/26 20:42:14 by ogorfti          ###   ########.fr        #
+#    Updated: 2023/03/31 21:56:22 by ogorfti          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,8 @@ CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
 
 hd = philo.h
+
+#should remove clean
 
 all : $(NAME) clean
 
