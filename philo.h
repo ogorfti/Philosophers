@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:28 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/01 23:19:44 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/02 21:07:33 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 
 typedef struct s_philo{
 	pthread_mutex_t	*mutex_print;
+	pthread_mutex_t	*mutex_sleep;
 	pthread_mutex_t	*data_race;
 	pthread_mutex_t	*right;
 	pthread_mutex_t	*left;
@@ -47,6 +48,7 @@ typedef struct s_philo{
 typedef struct s_process{
 	
 	pthread_mutex_t	mutex_print;
+	pthread_mutex_t	mutex_sleep;
 	pthread_mutex_t	data_race;
 	t_philo			*all_philo;
 
@@ -56,7 +58,7 @@ typedef struct s_process{
 void	initializes_philos(pthread_mutex_t *forks, t_philo *philo, t_process *process);
 void	init_forks(pthread_mutex_t *forks, int nbr);
 long	get_time(void);
-void	my_usleep(int ms);
+void	my_usleep(int ms, t_philo *philo);
 int		check_args(int ac, char **av);
 void	*philosopher(void *arg);
 void	*check_dead(void *arg);

@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/01 23:29:43 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/02 23:09:30 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ int	meal_tracker(t_philo *philo)
 	while (i < philo->philo_count)
 	{
 		if (philo[i].eat_count > 0 || philo[i].eat_count == -1)
-		{
 			return (0);
-		}
+		// else
+		// 	philo[i].dead = 0;
 		i++;
 	}
 	i = 0;

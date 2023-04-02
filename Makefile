@@ -6,7 +6,7 @@
 #    By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/15 18:14:09 by ogorfti           #+#    #+#              #
-#    Updated: 2023/04/01 23:32:25 by ogorfti          ###   ########.fr        #
+#    Updated: 2023/04/02 23:29:38 by ogorfti          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,7 @@ all : $(NAME) clean
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME) : $(OBJS_M) 
-		$(CC) $(CFLAGS) $(OBJS_M) $(LDFLAGS) -o $(NAME)
+		$(CC) $(CFLAGS) $(OBJS_M) -o $(NAME)
 
 clean :
 		$(RM) $(OBJS_M)

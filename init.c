@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/25 14:33:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/01 23:21:01 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/02 23:28:15 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	initializes_philos(pthread_mutex_t *forks, t_philo *philo,
 	i = 0;
 	pthread_mutex_init(&process->mutex_print, NULL);
 	pthread_mutex_init(&process->data_race, NULL);
+	pthread_mutex_init(&process->mutex_sleep, NULL);
 	while (i < ft_atoi(philo->argv[1]))
 	{
 		philo[i].start_time = first;
@@ -39,7 +40,7 @@ void	initializes_philos(pthread_mutex_t *forks, t_philo *philo,
 		philo[i].eat_time = ft_atoi(philo->argv[3]);
 		philo[i].sleep_time = ft_atoi(philo->argv[4]);
 		if (philo->argc == 6)
-			philo[i].eat_count = ft_atoi(philo->argv[5]);
+			philo[i].eat_count = ft_atoi(philo->argv[5]) + 1;
 		else
 			philo[i].eat_count = -1;
 		philo[i].left = &forks[i];
@@ -47,6 +48,7 @@ void	initializes_philos(pthread_mutex_t *forks, t_philo *philo,
 		philo[i].id = i + 1;
 		philo[i].stop = 1;
 		philo[i].mutex_print = &process->mutex_print;
+		philo[i].mutex_sleep = &process->mutex_sleep;
 		philo[i].data_race = &process->data_race;
 		philo[i].philo_count = ft_atoi(philo->argv[1]);
 		i++;

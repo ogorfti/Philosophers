@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 01:18:23 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/01 23:22:30 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/02 23:12:01 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void	print_simulation(t_philo *philo, char *str)
 	pthread_mutex_lock(philo->mutex_print);
 	if (philo->stop != 0)
 		printf("%ld %d %s\n", get_time() - philo->start_time, philo->id, str);
+	
 	pthread_mutex_unlock(philo->mutex_print);
 	//str == EAT should remove strcmp
 	if (strcmp(str, EAT) == 0)
@@ -96,21 +97,22 @@ void	*philosopher(void *arg)
 
 	philo = (t_philo *)arg;
 	is_done = philo->stop;
-	if (philo->id % 2 != 0)
-		my_usleep(100);
+	if (philo->id % 2 == 0)
+		my_usleep(100, philo);
 	while (is_done)
-	{		
+	{	
 		taken_fork(philo);
 		print_simulation(philo, EAT);
-		my_usleep(philo->eat_time);
+		my_usleep(philo->eat_time, philo);
 		pthread_mutex_unlock(philo->left);
 		pthread_mutex_unlock(philo->right);
 		print_simulation(philo, SLEEP);
-		my_usleep(philo->sleep_time);
+		my_usleep(philo->sleep_time, philo);
 		pthread_mutex_lock(philo->data_race);
 		is_done = philo->stop;
 		pthread_mutex_unlock(philo->data_race);
 		print_simulation(philo, THINK);
+		
 	}
 	return (NULL);
 }
