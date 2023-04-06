@@ -6,25 +6,43 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 01:18:23 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/02 23:12:01 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/06 23:23:56 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-#include <string.h>
 
 void	handle_dead(t_philo *philo, int i)
 {
 	int	j;
 
 	j = 0;
+	pthread_mutex_lock(philo->mutex_sleep);
 	pthread_mutex_lock(philo->mutex_print);
-	printf("%ld %d is died\n", get_time() - philo[i].start_time, philo[i].id);
+	printf("%ld %d \033[0;31m is died\033[0m\n",
+		get_time() - philo[i].start_time, philo[i].id);
 	while (j < philo->philo_count)
 	{
 		philo[j].stop = 0;
 		j++;
 	}
+	pthread_mutex_unlock(philo->mutex_print);
+	pthread_mutex_unlock(philo->mutex_sleep);
+	if (philo[i].philo_count == 1)
+		pthread_mutex_unlock(philo[i].left);
+}
+
+int	meal_return(t_philo *philo, int *i)
+{
+	pthread_mutex_lock(philo->data_race);
+	if (meal_tracker(philo) == 1)
+	{
+		pthread_mutex_unlock(philo->data_race);
+		return (1);
+	}
+	pthread_mutex_unlock(philo->data_race);
+	*i = 0;
+	return (0);
 }
 
 void	*check_dead(void *arg)
@@ -43,51 +61,16 @@ void	*check_dead(void *arg)
 				&& philo[i].eat_count != 0)
 			{
 				handle_dead(philo, i);
-				pthread_mutex_unlock(philo->mutex_print);
-				if (philo[i].philo_count == 1)
-					pthread_mutex_unlock(philo[i].left);
 				pthread_mutex_unlock(philo->data_race);
 				return (NULL);
 			}
 			i++;
 		}
 		pthread_mutex_unlock(philo->data_race);
-		pthread_mutex_lock(philo->data_race);
-		if (meal_tracker(philo) == 1)
-		{
-			pthread_mutex_unlock(philo->data_race);
+		if (meal_return(philo, &i))
 			return (NULL);
-		}
-		pthread_mutex_unlock(philo->data_race);
-		i = 0;
 	}
 	return (NULL);
-}
-
-void	print_simulation(t_philo *philo, char *str)
-{	
-	pthread_mutex_lock(philo->data_race);
-	pthread_mutex_lock(philo->mutex_print);
-	if (philo->stop != 0)
-		printf("%ld %d %s\n", get_time() - philo->start_time, philo->id, str);
-	
-	pthread_mutex_unlock(philo->mutex_print);
-	//str == EAT should remove strcmp
-	if (strcmp(str, EAT) == 0)
-	{
-		philo->last_eat = get_time();
-		if (philo->eat_count > 0)
-			philo->eat_count--;
-	}
-	pthread_mutex_unlock(philo->data_race);
-}
-
-void	taken_fork(t_philo *philo)
-{
-	pthread_mutex_lock(philo->left);
-	print_simulation(philo, FORK);
-	pthread_mutex_lock(philo->right);
-	print_simulation(philo, FORK);
 }
 
 void	*philosopher(void *arg)
@@ -112,7 +95,6 @@ void	*philosopher(void *arg)
 		is_done = philo->stop;
 		pthread_mutex_unlock(philo->data_race);
 		print_simulation(philo, THINK);
-		
 	}
 	return (NULL);
 }

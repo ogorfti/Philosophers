@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/25 14:42:46 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/01 22:48:07 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/06 21:40:53 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,10 @@ int	check_args(int ac, char **av)
 	while (av[i])
 	{
 		if (valid_number(av[i]) || ft_atoi(av[i]) <= 0 || check_max(av[i]) == 1)
+		{
+			printf("Error\n");
 			return (1);
+		}
 		i++;
 	}
 	return (0);

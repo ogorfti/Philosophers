@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/25 14:33:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/02 23:28:15 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/06 21:10:03 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,17 @@ void	init_forks(pthread_mutex_t *forks, int nbr)
 	i = -1;
 	while (++i < nbr)
 		pthread_mutex_init(&forks[i], NULL);
+}
+
+void	init_arguments(t_philo *philo, int *i)
+{
+	philo[*i].die_time = ft_atoi(philo->argv[2]);
+	philo[*i].eat_time = ft_atoi(philo->argv[3]);
+	philo[*i].sleep_time = ft_atoi(philo->argv[4]);
+	if (philo->argc == 6)
+		philo[*i].eat_count = ft_atoi(philo->argv[5]) + 1;
+	else
+		philo[*i].eat_count = -1;
 }
 
 void	initializes_philos(pthread_mutex_t *forks, t_philo *philo,
@@ -36,13 +47,7 @@ void	initializes_philos(pthread_mutex_t *forks, t_philo *philo,
 	{
 		philo[i].start_time = first;
 		philo[i].last_eat = first;
-		philo[i].die_time = ft_atoi(philo->argv[2]);
-		philo[i].eat_time = ft_atoi(philo->argv[3]);
-		philo[i].sleep_time = ft_atoi(philo->argv[4]);
-		if (philo->argc == 6)
-			philo[i].eat_count = ft_atoi(philo->argv[5]) + 1;
-		else
-			philo[i].eat_count = -1;
+		init_arguments(philo, &i);
 		philo[i].left = &forks[i];
 		philo[i].right = &forks[(i + 1) % ft_atoi(philo->argv[1])];
 		philo[i].id = i + 1;
@@ -87,7 +92,6 @@ void	create_philos(pthread_t *id, t_philo *philo,
 			printf("Failed to creat thread\n");
 			return ;
 		}
-		//usleep(100);
 		i++;
 	}
 	pthread_create(&dead_id, NULL, check_dead, (void *)process->all_philo);

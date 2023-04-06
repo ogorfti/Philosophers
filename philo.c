@@ -6,33 +6,29 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/02 23:09:30 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/06 21:40:15 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	meal_tracker(t_philo *philo)
+int	check_error(pthread_mutex_t	*forks, t_philo *philo,
+		pthread_t *id, int nbr_philo)
 {
-	int	i;
-
-	i = 0;
-	while (i < philo->philo_count)
+	if (!id)
+		return (1);
+	if (!forks)
 	{
-		if (philo[i].eat_count > 0 || philo[i].eat_count == -1)
-			return (0);
-		// else
-		// 	philo[i].dead = 0;
-		i++;
+		free (id);
+		return (1);
 	}
-	i = 0;
-	while (i < philo->philo_count)
+	if (!philo)
 	{
-		if (philo[i].eat_count == 0)
-			philo[i].stop = 0;
-		i++;
+		free (id);
+		destroy_forks (forks, nbr_philo);
+		return (1);
 	}
-	return (1);
+	return (0);
 }
 
 int	main(int ac, char **av)
@@ -45,23 +41,19 @@ int	main(int ac, char **av)
 	if (ac == 5 || ac == 6)
 	{
 		if (check_args(ac, av) == 1)
-		{
-			printf("Error\n");
 			return (0);
-		}
-		id = malloc(sizeof(pthread_t) * atoi(av[1]));
-		forks = malloc(sizeof(pthread_mutex_t) * atoi(av[1]));
-		init_forks(forks, atoi(av[1]));
-		philo = malloc(sizeof(t_philo) * atoi(av[1]));
+		id = malloc(sizeof(pthread_t) * ft_atoi(av[1]));
+		forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(av[1]));
+		philo = malloc(sizeof(t_philo) * ft_atoi(av[1]));
+		if (check_error(forks, philo, id, ft_atoi(av[1])))
+			return (0);
+		init_forks(forks, ft_atoi(av[1]));
 		philo->argv = av;
 		philo->argc = ac;
 		process = malloc(sizeof(t_process));
 		initializes_philos(forks, philo, process);
 		create_philos(id, philo, av, process);
-		destroy_forks(forks, ft_atoi(av[1]));
-		free (id);
-		free (philo);
-		free (process);
+		my_free(forks, process, philo, id);
 	}
 	else
 		printf("Invalid number of arguments!\n");
