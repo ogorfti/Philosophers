@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/25 14:39:14 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/06 19:53:12 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/14 18:09:46 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ void	my_usleep(int ms, t_philo *philo)
 
 	start = get_time();
 	is_done = 1;
-	while (1)
+	while (is_done)
 	{
+		if (get_time() - start >= ms || !is_done)
+			break ;
 		usleep(100);
 		pthread_mutex_lock(philo->mutex_sleep);
 		is_done = philo->stop;
 		pthread_mutex_unlock(philo->mutex_sleep);
-		if (get_time() - start >= ms || !is_done)
-			break ;
 	}
 }

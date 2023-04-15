@@ -6,7 +6,7 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 01:18:23 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/06 23:23:56 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/14 22:43:47 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	handle_dead(t_philo *philo, int i)
 	j = 0;
 	pthread_mutex_lock(philo->mutex_sleep);
 	pthread_mutex_lock(philo->mutex_print);
-	printf("%ld %d \033[0;31m is died\033[0m\n",
+	printf("%ld %d\033[0;31m died\033[0m\n",
 		get_time() - philo[i].start_time, philo[i].id);
 	while (j < philo->philo_count)
 	{
@@ -35,11 +35,14 @@ void	handle_dead(t_philo *philo, int i)
 int	meal_return(t_philo *philo, int *i)
 {
 	pthread_mutex_lock(philo->data_race);
+	pthread_mutex_lock(philo->mutex_sleep);
 	if (meal_tracker(philo) == 1)
 	{
+		pthread_mutex_unlock(philo->mutex_sleep);
 		pthread_mutex_unlock(philo->data_race);
 		return (1);
 	}
+	pthread_mutex_unlock(philo->mutex_sleep);
 	pthread_mutex_unlock(philo->data_race);
 	*i = 0;
 	return (0);
@@ -91,9 +94,9 @@ void	*philosopher(void *arg)
 		pthread_mutex_unlock(philo->right);
 		print_simulation(philo, SLEEP);
 		my_usleep(philo->sleep_time, philo);
-		pthread_mutex_lock(philo->data_race);
+		pthread_mutex_lock(philo->mutex_sleep);
 		is_done = philo->stop;
-		pthread_mutex_unlock(philo->data_race);
+		pthread_mutex_unlock(philo->mutex_sleep);
 		print_simulation(philo, THINK);
 	}
 	return (NULL);

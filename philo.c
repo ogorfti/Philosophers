@@ -6,26 +6,28 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 18:14:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/06 21:40:15 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/14 21:29:37 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	check_error(pthread_mutex_t	*forks, t_philo *philo,
-		pthread_t *id, int nbr_philo)
+int	check_error(t_process *process, int nbr_philo)
 {
-	if (!id)
+	process->id = malloc(sizeof(pthread_t) * nbr_philo);
+	if (!process->id)
 		return (1);
-	if (!forks)
+	process->forks = malloc(sizeof(pthread_mutex_t) * nbr_philo);
+	if (!process->forks)
 	{
-		free (id);
+		free (process->id);
 		return (1);
 	}
-	if (!philo)
+	process->philo = malloc(sizeof(t_philo) * nbr_philo);
+	if (!process->philo)
 	{
-		free (id);
-		destroy_forks (forks, nbr_philo);
+		free (process->id);
+		destroy_forks (process->forks, nbr_philo);
 		return (1);
 	}
 	return (0);
@@ -33,27 +35,27 @@ int	check_error(pthread_mutex_t	*forks, t_philo *philo,
 
 int	main(int ac, char **av)
 {
-	pthread_mutex_t	*forks;
 	t_process		*process;
-	t_philo			*philo;
-	pthread_t		*id;
 
 	if (ac == 5 || ac == 6)
 	{
 		if (check_args(ac, av) == 1)
 			return (0);
-		id = malloc(sizeof(pthread_t) * ft_atoi(av[1]));
-		forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(av[1]));
-		philo = malloc(sizeof(t_philo) * ft_atoi(av[1]));
-		if (check_error(forks, philo, id, ft_atoi(av[1])))
-			return (0);
-		init_forks(forks, ft_atoi(av[1]));
-		philo->argv = av;
-		philo->argc = ac;
 		process = malloc(sizeof(t_process));
-		initializes_philos(forks, philo, process);
-		create_philos(id, philo, av, process);
-		my_free(forks, process, philo, id);
+		if (!process)
+			return (1);
+		if (check_error(process, ft_atoi(av[1])))
+			return (1);
+		if (init_forks(process, ft_atoi(av[1])))
+		{
+			my_free(process->forks, process, process->philo, process->id);
+			return (1);
+		}
+		process->philo->argv = av;
+		process->philo->argc = ac;
+		initializes_philos(process->forks, process->philo, process);
+		create_philos(process->id, process->philo, av, process);
+		my_free(process->forks, process, process->philo, process->id);
 	}
 	else
 		printf("Invalid number of arguments!\n");

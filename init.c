@@ -6,19 +6,36 @@
 /*   By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/25 14:33:44 by ogorfti           #+#    #+#             */
-/*   Updated: 2023/04/06 21:10:03 by ogorfti          ###   ########.fr       */
+/*   Updated: 2023/04/14 21:27:37 by ogorfti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_forks(pthread_mutex_t *forks, int nbr)
+// if your program terminates due to an error, all threads will be terminated,
+// including those that were successfully created before the error occurred.
+
+int	init_forks(t_process *process, int nbr)
 {
 	int	i;
 
 	i = -1;
+	if (pthread_mutex_init(&process->mutex_print, NULL)
+		|| pthread_mutex_init(&process->data_race, NULL)
+		|| pthread_mutex_init(&process->mutex_sleep, NULL))
+	{
+		printf("Failed to init mutex\n");
+		return (1);
+	}
 	while (++i < nbr)
-		pthread_mutex_init(&forks[i], NULL);
+	{
+		if (pthread_mutex_init(&process->forks[i], NULL) != 0)
+		{
+			printf("Failed to init mutex\n");
+			return (1);
+		}
+	}
+	return (0);
 }
 
 void	init_arguments(t_philo *philo, int *i)
@@ -40,9 +57,6 @@ void	initializes_philos(pthread_mutex_t *forks, t_philo *philo,
 
 	first = get_time();
 	i = 0;
-	pthread_mutex_init(&process->mutex_print, NULL);
-	pthread_mutex_init(&process->data_race, NULL);
-	pthread_mutex_init(&process->mutex_sleep, NULL);
 	while (i < ft_atoi(philo->argv[1]))
 	{
 		philo[i].start_time = first;
@@ -80,12 +94,10 @@ void	create_philos(pthread_t *id, t_philo *philo,
 		char **av, t_process *process)
 {
 	pthread_t	dead_id;
-	int			nbr_philo;
 	int			i;
 
 	i = 0;
-	nbr_philo = ft_atoi(av[1]);
-	while (i < nbr_philo)
+	while (i < ft_atoi(av[1]))
 	{
 		if (pthread_create(&id[i], NULL, &philosopher, &philo[i]) != 0)
 		{
@@ -94,7 +106,16 @@ void	create_philos(pthread_t *id, t_philo *philo,
 		}
 		i++;
 	}
-	pthread_create(&dead_id, NULL, check_dead, (void *)process->all_philo);
-	ft_join(id, nbr_philo);
-	pthread_join(dead_id, NULL);
+	if (pthread_create(&dead_id, NULL, check_dead,
+			(void *)process->all_philo) != 0)
+	{
+		printf("Failed to creat thread\n");
+		return ;
+	}
+	ft_join(id, ft_atoi(av[1]));
+	if (pthread_join(dead_id, NULL) != 0)
+	{
+		printf("Failed to join thread\n");
+		return ;
+	}
 }

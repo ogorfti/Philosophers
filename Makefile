@@ -6,7 +6,7 @@
 #    By: ogorfti <ogorfti@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/15 18:14:09 by ogorfti           #+#    #+#              #
-#    Updated: 2023/04/06 21:55:23 by ogorfti          ###   ########.fr        #
+#    Updated: 2023/04/14 21:49:47 by ogorfti          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,14 +19,14 @@ OBJS_M = $(SRC_M:.c=.o)
 CC = cc
 
 CFLAGS = -Wall -Wextra -Werror
+
 # -fsanitize=thread -g
-LDFLAGS = -pthread
+# LDFLAGS = -pthread
 
 RM = rm -f
 
 hd = philo.h
 
-#.hd?
 
 all : $(NAME)
 
